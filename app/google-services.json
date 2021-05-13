@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "978625993207",
+    "project_id": "myenglishbook-49e5c",
+    "storage_bucket": "myenglishbook-49e5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978625993207:android:e709a377e6b4446404b6f2",
+        "android_client_info": {
+          "package_name": "kr.ac.konkuk.myenglishwordbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "978625993207-nk7npfv36v2cqbik87nn3lbeilh4977n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuhSVo5D9oflJ43YbJ1CACt0rGOyiX824"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "978625993207-nk7npfv36v2cqbik87nn3lbeilh4977n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_word"
+        android:icon="@drawable/ic_baseline_menu_book_24"
+        android:title="@string/list"
+        />
+
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/search"
+        android:title="@string/search"/>
+
+    <item
+        android:id="@+id/nav_today"
+        android:icon="@drawable/ic_baseline_today_24"
+        android:title="@string/today_word"/>
+
+    <item
+        android:id="@+id/nav_add_word"
+        android:icon="@drawable/add"
+        android:title="@string/add"/>
+
+    <item
+        android:id="@+id/nav_bookmark"
+        android:icon="@drawable/ic_baseline_stars_24"
+        android:title="@string/bookmark"/>
+
+</menu>
