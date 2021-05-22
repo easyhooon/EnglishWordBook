@@ -4,21 +4,64 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
+import androidx.core.os.persistableBundleOf
+
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import kr.ac.konkuk.myenglishwordbook.Model.Word
-import kr.ac.konkuk.myenglishwordbook.R
+import kr.ac.konkuk.myenglishwordbook.Model.WordItem
 import kr.ac.konkuk.myenglishwordbook.databinding.WordItemBinding
 
-class WordAdapter (val items:ArrayList<Word>) : RecyclerView.Adapter<WordAdapter.ViewHolder>(){
+//val onItemClicked: (WordItem) -> Unit
+class WordAdapter(val items:ArrayList<WordItem>): RecyclerView.Adapter<WordAdapter.ViewHolder>(){
 
     //리스너 정의
     interface OnItemClickListener{
         //호출할 함수 명시 (입력 정보를 담아서, 뷰홀더, 뷰, 데이터, 포지션)
-        fun OnItemClick(holder:ViewHolder, view: View, data:Word, position:Int)
+        fun onItemClick(holder:ViewHolder, view: View, data:WordItem, position:Int)
         //이 것을 인터페이스로 구현하는 객체가 있는데 그 객체가 구현한 함수를 호출한다는 것을 의미
-        fun bookmarkClick(holder:ViewHolder, view: View, data:Word, position:Int)
+        fun bookmarkClick(holder:ViewHolder, view: View, data:WordItem, position:Int)
+    }
+
+    //인터페이스를 맴버로 선언
+    var itemClickListener:OnItemClickListener?=null
+
+    //부모 생성자로 인자 전달
+    //이벤트 처리는 뷰 홀더에서 처리!!!!
+    inner class ViewHolder(val binding: WordItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(wordItem: WordItem) {
+            binding.tvWord.text = wordItem.word
+            binding.tvMeaning.text = wordItem.meaning
+
+            val isClickedItem : Boolean = items[adapterPosition].isClicked
+            if ( isClickedItem )
+                binding.meaningLayout.visibility = View.VISIBLE
+            else
+                binding.meaningLayout.visibility = View.GONE
+
+            binding.tvWord.setOnClickListener {
+                itemClickListener?.onItemClick(
+                    this,
+                    it,
+                    items[adapterPosition],
+                    adapterPosition)
+            }
+
+            binding.btnBookmark.setOnClickListener {
+                itemClickListener?.bookmarkClick(
+                    this,
+                    it,
+                    items[adapterPosition],
+                    adapterPosition
+                )
+                //todo 북마크에 추가되어있지 않았다면
+                binding.btnBookmark.setBackgroundColor(Color.YELLOW)
+
+                //todo 북마크에 추가되어있는 단어라면
+                //todo 다시 북마크 버튼 흑백으로
+            }
+        }
     }
 
     fun moveItem(oldPos:Int, newPos: Int){
@@ -35,31 +78,6 @@ class WordAdapter (val items:ArrayList<Word>) : RecyclerView.Adapter<WordAdapter
         notifyItemRemoved(pos)
     }
 
-    //인터페이스를 맴버로 선언
-    var itemClickListener:OnItemClickListener?=null
-
-    //부모 생성자로 인자 전달
-    //이벤트 처리는 뷰 홀더에서 처리!!!!
-    inner class ViewHolder(val binding: WordItemBinding) : RecyclerView.ViewHolder(binding.root){
-        init{
-            binding.tvWord.setOnClickListener{
-                //누군가는 구현을 해놓음, 니가 구현해놓은 itemClick이라고하는 함수를 호출해줄게
-                //viewHolder, view,  item, adapterPosition
-                //뷰홀더에서 할 역할은 여기까지만 구현 작업은 액티비티에서
-                itemClickListener?.OnItemClick(this, it, items[adapterPosition], adapterPosition)
-            }
-
-            binding.btnBookmark.setOnClickListener {
-                itemClickListener?.bookmarkClick(this,it,items[adapterPosition],adapterPosition)
-                //todo 북마크에 추가되어있지 않았다면
-                binding.btnBookmark.setBackgroundColor(Color.YELLOW)
-
-                //todo 북마크에 추가되어있는 단어라면
-                //todo 다시 북마크 버튼 흑백으로
-            }
-        }
-    }
-
     //뷰홀더를 만들어주는 함수
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         //from으로 컨텍스트 정보를 획득, 어댑터를 상속받은 클래스이기 때문에 현재 클래스내에는 컨텍스트가 없음
@@ -74,15 +92,9 @@ class WordAdapter (val items:ArrayList<Word>) : RecyclerView.Adapter<WordAdapter
     //데이터가 바뀌거나 뷰홀더가 만들어진 경우 onBindViewHolder로 전달됨
     //데이터 바인딩(연결)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        //holder에 . 붙혀서 접근 하여 다루는 것은 그 아이디를 가진 view만을 컨트룰 하는 것
-        holder.binding.tvWord.text = items[position].word
-        holder.binding.tvMeaning.text = items[position].meaning
 
-        val isClickedItem : Boolean = items[position].isClicked
-        if ( isClickedItem )
-            holder.binding.meaningLayout.visibility = View.VISIBLE
-        else
-            holder.binding.meaningLayout.visibility = View.GONE
+//        holder.bind(getItem(position))
+        holder.bind(items[position])
 
     }
 
@@ -90,10 +102,23 @@ class WordAdapter (val items:ArrayList<Word>) : RecyclerView.Adapter<WordAdapter
         return items.size
     }
 
-    fun setChangeClickFlag(position: Int, data: Word) {
+    fun setChangeClickFlag(position: Int, data: WordItem) {
         //데이터 값 변경(실제 값이 변경됨)
+//        getItem(position)
         items[position] = data
         //onBindViewHolder 강제 호출(새로고침)
         notifyDataSetChanged()
     }
+
+//    companion object {
+//        val diffUtil = object : DiffUtil.ItemCallback<WordItem>() {
+//            override fun areItemsTheSame(oldItem: WordItem, newItem: WordItem): Boolean {
+//                return oldItem.word == newItem.word
+//            }
+//
+//            override fun areContentsTheSame(oldItem: WordItem, newItem: WordItem): Boolean {
+//                return oldItem == newItem
+//            }
+//        }
+//    }
 }

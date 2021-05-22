@@ -4,17 +4,15 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kr.ac.konkuk.myenglishwordbook.Model.TodayWord
-import kr.ac.konkuk.myenglishwordbook.R
+import kr.ac.konkuk.myenglishwordbook.Model.TodayWordItem
 import kr.ac.konkuk.myenglishwordbook.databinding.TodayWordItemBinding
 
 //<> <- 이 안에를 지정하는 걸 제네릭을 지정한다라고 함
 
 class TodayWordPagerAdapter
     (
-    private val todayWords: List<TodayWord>,
+    private val todayWords: List<TodayWordItem>,
     private val isMeaningRevealed: Boolean
 ) :
     RecyclerView.Adapter<TodayWordPagerAdapter.ViewHolder>() {
@@ -23,7 +21,7 @@ class TodayWordPagerAdapter
     inner class ViewHolder(private val binding: TodayWordItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
-        fun bind(todayWord: TodayWord, isMeaningRevealed: Boolean) {
+        fun bind(todayWord: TodayWordItem, isMeaningRevealed: Boolean) {
             //명언 따옴표로 감싸기
             binding.wordTextView.text = todayWord.word
 

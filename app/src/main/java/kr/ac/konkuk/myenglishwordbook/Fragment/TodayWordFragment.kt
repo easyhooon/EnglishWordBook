@@ -9,7 +9,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kr.ac.konkuk.myenglishwordbook.Adapter.TodayWordPagerAdapter
-import kr.ac.konkuk.myenglishwordbook.Model.TodayWord
+import kr.ac.konkuk.myenglishwordbook.Model.TodayWordItem
 import kr.ac.konkuk.myenglishwordbook.databinding.FragmentTodayWordBinding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -80,7 +80,7 @@ class TodayWordFragment : Fragment() {
         }
     }
 
-    private fun displayTodayWordPager(todayWords: List<TodayWord>, isMeaningRevealed: Boolean) {
+    private fun displayTodayWordPager(todayWords: List<TodayWordItem>, isMeaningRevealed: Boolean) {
         val adapter = TodayWordPagerAdapter(
             todayWords = todayWords,
             isMeaningRevealed = isMeaningRevealed
@@ -92,7 +92,7 @@ class TodayWordFragment : Fragment() {
 
 
     //JsonArray를 JsonList로 변환(JsonObject들의 list
-    private fun parseQuotesJson(json: String): List<TodayWord> {
+    private fun parseQuotesJson(json: String): List<TodayWordItem> {
         val jsonArray = JSONArray(json)
         var jsonList = emptyList<JSONObject>()
         for(index in 0 until jsonArray.length()) {
@@ -105,10 +105,15 @@ class TodayWordFragment : Fragment() {
 
         //jsonList를 quoteList로 변환해주는 작업
         return jsonList.map {
-            TodayWord(
+            TodayWordItem(
                 word = it.getString("word"),
                 meaning = it.getString("meaning")
             )
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 }

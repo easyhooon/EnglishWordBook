@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_word -> {
                     moveToFragment(WordFragment())
-                    return@OnNavigationItemSelectedListener true //화면 전환 (하이라이트?)
+                    return@OnNavigationItemSelectedListener true
                 }
 
                 R.id.nav_search -> {
@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         //첫화면이 오늘의 단어이므로 설정 먼저 해줌
         binding.navView.selectedItemId = R.id.nav_today
+
         binding.navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         moveToFragment(TodayWordFragment()) //앱을 시작할때 디폴트로 오늘의 단어어프래그먼트가 켜지도록

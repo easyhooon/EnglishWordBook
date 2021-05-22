@@ -10,7 +10,6 @@ import kr.ac.konkuk.myenglishwordbook.databinding.FragmentSearchBinding
 
 class SearchFragment : Fragment() {
     var binding: FragmentSearchBinding? = null
-//    val ViewModel: ViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,7 +28,7 @@ class SearchFragment : Fragment() {
             webView.settings.javaScriptEnabled = true
             webView.settings.builtInZoomControls = true
             webView.settings.defaultTextEncodingName = "utf-8"
-            webView.loadUrl(SEARCH_URL)
+            webView.loadUrl(TEMP_URL)
         }
     }
 
@@ -42,5 +41,6 @@ class SearchFragment : Fragment() {
 
     companion object{
         private const val SEARCH_URL = "https://en.dict.naver.com/#/main"
+        private const val TEMP_URL = "https://www.google.com/"
     }
 }

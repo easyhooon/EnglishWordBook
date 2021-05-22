@@ -1,8 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Fragment
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,22 +16,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kr.ac.konkuk.myenglishwordbook.Activity.MainActivity
 import kr.ac.konkuk.myenglishwordbook.Adapter.BookmarkAdapter
 import kr.ac.konkuk.myenglishwordbook.DB.AppDatabase
 import kr.ac.konkuk.myenglishwordbook.DB.getAppDatabase
-import kr.ac.konkuk.myenglishwordbook.Model.Bookmark
+import kr.ac.konkuk.myenglishwordbook.Model.BookmarkItem
 import kr.ac.konkuk.myenglishwordbook.databinding.FragmentBookmarkBinding
-import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
 class BookmarkFragment : Fragment() {
     var binding: FragmentBookmarkBinding? = null
     //ui갱신이 가능한 코루틴
     val scope = CoroutineScope(Dispatchers.Main)
-    var bookmarkList: ArrayList<Bookmark> = ArrayList()
+    var bookmarkList: ArrayList<BookmarkItem> = ArrayList()
 
     lateinit var bookmarkAdapter: BookmarkAdapter
     lateinit var tts: TextToSpeech
@@ -59,8 +54,6 @@ class BookmarkFragment : Fragment() {
     }
 
     private fun initData() {
-        //progressbar 필요할듯
-
         scope.launch {
             binding?.progressBar?.visibility = View.VISIBLE
             CoroutineScope(Dispatchers.IO).async {
@@ -70,12 +63,11 @@ class BookmarkFragment : Fragment() {
             bookmarkAdapter.notifyDataSetChanged()
             binding?.progressBar?.visibility= View.GONE
         }
-
     }
 
     private fun initRecyclerView() {
-        binding?.bookmarkRecyclerView?.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        binding?.bookmarkRecyclerView?.addItemDecoration(DividerItemDecoration(activity, LinearLayoutManager.VERTICAL))
+        binding?.bookmarkRecyclerView?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding?.bookmarkRecyclerView?.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
 
         bookmarkAdapter = BookmarkAdapter(bookmarkList)
 
@@ -84,26 +76,24 @@ class BookmarkFragment : Fragment() {
 
         //인터페이스가 맴버로 있었기 때문에 맴버에 해당하는 정보 객체로 만들어서 세팅
         bookmarkAdapter.itemClickListener = object: BookmarkAdapter.OnItemClickListener{
-            override fun OnItemClick(
+            override fun onItemClick(
                 holder: BookmarkAdapter.ViewHolder,
                 view: View,
-                word: Bookmark,
+                data: BookmarkItem,
                 position: Int
             ) {
                 //뜻 레이아웃이 열려있지 않을때만 음성이 나옴
-                if (isTtsReady && !word.isClicked) {
+                if (isTtsReady && !data.isClicked) {
                     Log.d("TTS", "tts가 실행중입니다")
-                    tts.speak(word.word, TextToSpeech.QUEUE_ADD, null, null)
+                    tts.speak(data.word, TextToSpeech.QUEUE_ADD, null, null)
                 }
 
                 // Change Click FLAG
                 // Flag를 바꾼 뒤에(이것은 그냥 값을 복사해 온 것에 그 값을 변경한 것이기 때문에 이것만 해줄 경우 실제 갑이 변경되지 않음)
-                word.isClicked = !word.isClicked
+                data.isClicked = !data.isClicked
                 //따라서 바뀐 데이터 객체를 다시 adapter로 보냄
-                bookmarkAdapter.setChangeClickFlag(position, word)
+                bookmarkAdapter.setChangeClickFlag(position, data)
 
-                // 자바에서는 getApplicationContext
-                // Toast.makeText(applicationContext, data.meaning, Toast.LENGTH_SHORT).show()
             }
 
         }
@@ -160,10 +150,16 @@ class BookmarkFragment : Fragment() {
         })
     }
 
+    override fun onStop() {
+        super.onStop()
+        tts.stop()
+    }
+
     //주의사항
     //프래그먼트의 생명주기가 뷰보다 오래살아남을 수 있음 따라서 onDestroyView에서 binding을 해제시켜 메모리 누수를 방지
     override fun onDestroyView() {
         super.onDestroyView()
+        tts.shutdown()
         binding = null
     }
 }

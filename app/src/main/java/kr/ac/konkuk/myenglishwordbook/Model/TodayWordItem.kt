@@ -1,6 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Model
 
-data class TodayWord (
+data class TodayWordItem (
     val word: String,
     val meaning: String
 )

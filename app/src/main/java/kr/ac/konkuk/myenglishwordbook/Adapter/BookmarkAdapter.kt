@@ -3,21 +3,16 @@ package kr.ac.konkuk.myenglishwordbook.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kr.ac.konkuk.myenglishwordbook.DB.AppDatabase
-import kr.ac.konkuk.myenglishwordbook.DB.getAppDatabase
-import kr.ac.konkuk.myenglishwordbook.Model.Bookmark
-import kr.ac.konkuk.myenglishwordbook.R
+import kr.ac.konkuk.myenglishwordbook.Model.BookmarkItem
 import kr.ac.konkuk.myenglishwordbook.databinding.BookmarkItemBinding
-import kr.ac.konkuk.myenglishwordbook.databinding.WordItemBinding
 
-class BookmarkAdapter (val items:ArrayList<Bookmark>) : RecyclerView.Adapter<BookmarkAdapter.ViewHolder>(){
+class BookmarkAdapter (val items:ArrayList<BookmarkItem>) : RecyclerView.Adapter<BookmarkAdapter.ViewHolder>(){
 
     //리스너 정의
     interface OnItemClickListener{
         //호출할 함수 명시 (입력 정보를 담아서, 뷰홀더, 뷰, 데이터, 포지션)
-        fun OnItemClick(holder:ViewHolder, view: View, data: Bookmark, position:Int)
+        fun onItemClick(holder:ViewHolder, view: View, data: BookmarkItem, position:Int)
         //이 것을 인터페이스로 구현하는 객체가 있는데 그 객체가 구현한 함수를 호출한다는 것을 의미
     }
 
@@ -48,7 +43,10 @@ class BookmarkAdapter (val items:ArrayList<Bookmark>) : RecyclerView.Adapter<Boo
                 //누군가는 구현을 해놓음, 니가 구현해놓은 itemClick이라고하는 함수를 호출해줄게
                 //viewHolder, view,  item, adapterPosition
                 //뷰홀더에서 할 역할은 여기까지만 구현 작업은 액티비티에서
-                itemClickListener?.OnItemClick(this, it, items[adapterPosition], adapterPosition)
+                itemClickListener?.onItemClick(this,
+                    it,
+                    items[adapterPosition],
+                    adapterPosition)
             }
         }
         //itemView는 xml 전체를 의미 (root layout)
@@ -84,9 +82,9 @@ class BookmarkAdapter (val items:ArrayList<Bookmark>) : RecyclerView.Adapter<Boo
         return items.size
     }
 
-    fun setChangeClickFlag(position: Int, bookmark: Bookmark) {
+    fun setChangeClickFlag(position: Int, data: BookmarkItem) {
         //데이터 값 변경(실제 값이 변경됨)
-        items[position] = bookmark
+        items[position] = data
         //onBindViewHolder 강제 호출(새로고침)
         notifyDataSetChanged()
     }
