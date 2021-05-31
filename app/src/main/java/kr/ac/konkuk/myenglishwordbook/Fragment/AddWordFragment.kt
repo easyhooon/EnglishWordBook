@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.DB_WORD
+import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.WORD
 import kr.ac.konkuk.myenglishwordbook.Model.WordItem
 import kr.ac.konkuk.myenglishwordbook.databinding.FragmentAddWordBinding
 
@@ -23,8 +23,8 @@ class AddWordFragment : Fragment() {
 
     val scope = CoroutineScope(Dispatchers.Main)
 
-    private val wordDB: DatabaseReference by lazy {
-        Firebase.database.reference.child(DB_WORD)
+    private val wordReference: DatabaseReference by lazy {
+        Firebase.database.reference.child(WORD)
     }
 
     override fun onCreateView(
@@ -41,37 +41,31 @@ class AddWordFragment : Fragment() {
 
     private fun init() {
         binding?.btnAdd?.setOnClickListener {
+            val wordId = wordReference.push().key
             val word = binding!!.etWord.text.toString()
             val meaning = binding!!.etMeaning.text.toString()
+            val password = binding!!.etPassword.text.toString()
 
             scope.launch {
                 binding?.progressBar?.visibility = View.VISIBLE
                 CoroutineScope(Dispatchers.IO).async {
-                    addWord(word, meaning)
+                    if (wordId != null) {
+                        addWord(wordId, word, meaning, password)
+                    }
                 }.await()
                 binding?.progressBar?.visibility= View.GONE
             }
             Toast.makeText(context, "단어를 추가하였습니다", Toast.LENGTH_SHORT).show()
-//            writeFile(word, meaning)
+
         }
     }
 
-    private fun addWord(word: String, meaning: String) {
-        val wordItem = WordItem(word, meaning, false)
-        //todo 단어의 중복 체크 필요..
+    private fun addWord(wordId: String, word: String, meaning: String, password: String) {
+        val wordItem = WordItem(wordId, word, meaning, password, false, false)
 
-        wordDB.push().setValue(wordItem)
-        //toast메세지가 안뜸
+        wordReference.push().setValue(wordItem)
+        //Can't toast on a thread that has not called Looper.prepare()
 //        Toast.makeText(context, "단어를 추가하였습니다", Toast.LENGTH_SHORT).show()
     }
 
-
-//    private fun writeFile(word: String, meaning: String) {
-//        //printString 객체 생성
-//        val output = PrintStream(activity?.openFileOutput("out.txt", AppCompatActivity.MODE_APPEND))
-//        output.println(word)
-//        output.println(meaning)
-//        output.close()
-//        Toast.makeText(activity, "단어가 저장되었습니다", Toast.LENGTH_SHORT).show()
-//    }
 }

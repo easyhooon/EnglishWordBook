@@ -19,8 +19,6 @@ class BookmarkAdapter (val items:ArrayList<BookmarkItem>) : RecyclerView.Adapter
     fun removeItem(pos:Int) {
         items.removeAt(pos)
         //포지션의 위치한 아이템(데이터)의 제거를 알림(화면에 반영)
-        //todo RoomDB의 실제 반영
-        //delete
         notifyItemRemoved(pos)
     }
 

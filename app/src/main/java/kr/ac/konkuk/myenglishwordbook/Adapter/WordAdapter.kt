@@ -1,30 +1,44 @@
 package kr.ac.konkuk.myenglishwordbook.Adapter
 
+import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
+import android.os.Vibrator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.persistableBundleOf
-
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.WORD
+import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.WORD_ID
 import kr.ac.konkuk.myenglishwordbook.Model.WordItem
+import kr.ac.konkuk.myenglishwordbook.R
 import kr.ac.konkuk.myenglishwordbook.databinding.WordItemBinding
 
 //val onItemClicked: (WordItem) -> Unit
-class WordAdapter(val items:ArrayList<WordItem>): RecyclerView.Adapter<WordAdapter.ViewHolder>(){
+class WordAdapter(val items: ArrayList<WordItem>, val context: Context) : RecyclerView.Adapter<WordAdapter.ViewHolder>() {
 
     //리스너 정의
-    interface OnItemClickListener{
+    interface OnItemClickListener {
         //호출할 함수 명시 (입력 정보를 담아서, 뷰홀더, 뷰, 데이터, 포지션)
-        fun onItemClick(holder:ViewHolder, view: View, data:WordItem, position:Int)
+        fun onItemClick(holder: ViewHolder, view: View, data: WordItem, position: Int)
+
         //이 것을 인터페이스로 구현하는 객체가 있는데 그 객체가 구현한 함수를 호출한다는 것을 의미
-        fun bookmarkClick(holder:ViewHolder, view: View, data:WordItem, position:Int)
+        fun bookmarkClick(holder: ViewHolder, view: View, data: WordItem, position: Int)
     }
 
     //인터페이스를 맴버로 선언
-    var itemClickListener:OnItemClickListener?=null
+    var itemClickListener: OnItemClickListener? = null
+
+    private lateinit var wordReference: DatabaseReference
+
+    lateinit var vibrator: Vibrator
 
     //부모 생성자로 인자 전달
     //이벤트 처리는 뷰 홀더에서 처리!!!!
@@ -34,19 +48,25 @@ class WordAdapter(val items:ArrayList<WordItem>): RecyclerView.Adapter<WordAdapt
             binding.tvWord.text = wordItem.word
             binding.tvMeaning.text = wordItem.meaning
 
-            val isClickedItem : Boolean = items[adapterPosition].isClicked
-            if ( isClickedItem )
+            val isClickedItem: Boolean = items[adapterPosition].isClicked
+            val isCheckedItem: Boolean = items[adapterPosition].isChecked
+            if (isClickedItem)
                 binding.meaningLayout.visibility = View.VISIBLE
             else
                 binding.meaningLayout.visibility = View.GONE
 
-            binding.tvWord.setOnClickListener {
-                itemClickListener?.onItemClick(
-                    this,
-                    it,
-                    items[adapterPosition],
-                    adapterPosition)
+            if (isCheckedItem){
+                binding.btnBookmark.setBackgroundColor(Color.YELLOW)
             }
+
+                binding.tvWord.setOnClickListener {
+                    itemClickListener?.onItemClick(
+                        this,
+                        it,
+                        items[adapterPosition],
+                        adapterPosition
+                    )
+                }
 
             binding.btnBookmark.setOnClickListener {
                 itemClickListener?.bookmarkClick(
@@ -55,16 +75,14 @@ class WordAdapter(val items:ArrayList<WordItem>): RecyclerView.Adapter<WordAdapt
                     items[adapterPosition],
                     adapterPosition
                 )
-                //todo 북마크에 추가되어있지 않았다면
-                binding.btnBookmark.setBackgroundColor(Color.YELLOW)
-
-                //todo 북마크에 추가되어있는 단어라면
-                //todo 다시 북마크 버튼 흑백으로
+//                if (isCheckedItem){
+//                    binding.btnBookmark.setBackgroundColor(Color.YELLOW)
+//                }
             }
         }
     }
 
-    fun moveItem(oldPos:Int, newPos: Int){
+    fun moveItem(oldPos: Int, newPos: Int) {
         val item = items[oldPos]
         items.removeAt(oldPos) //삭제 후
         items.add(newPos, item) //삽입
@@ -72,10 +90,50 @@ class WordAdapter(val items:ArrayList<WordItem>): RecyclerView.Adapter<WordAdapt
         notifyItemMoved(oldPos, newPos)
     }
 
-    fun removeItem(pos:Int) {
-        items.removeAt(pos)
-        //포지션의 위치한 아이템(데이터)의 제거를 알림(화면에 반영)
-        notifyItemRemoved(pos)
+    fun removeItem(pos: Int) {
+//        wordReference = FirebaseDatabase.getInstance().getReference(WORD)
+
+        val dialogRemove = Dialog(context, kr.ac.konkuk.myenglishwordbook.R.style.Theme_AppCompat_DayNight_Dialog_Alert)
+        dialogRemove.setContentView(R.layout.dialog_confirm_password)
+
+        val et_password = dialogRemove.findViewById<EditText>(R.id.et_password)
+        val btn_cofirm = dialogRemove.findViewById<Button>(R.id.btn_confirm)
+
+        btn_cofirm.setOnClickListener {
+            if(et_password.text.isEmpty()){
+                Toast.makeText(context, "비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
+            }
+            if(et_password.text.toString() != items[pos].password){
+                Toast.makeText(context, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                wordReference = Firebase.database.reference.child(WORD)
+
+                val wordId = items[pos].wordId
+                wordReference.orderByChild(WORD_ID).equalTo(wordId)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            for (snapshot in dataSnapshot.children) {
+                                Log.d(
+                                    "Snapshot",
+                                    "onDataChange: ${snapshot.key?.let { wordReference.child(it) }}"
+                                )
+                                snapshot.key?.let { wordReference.child(it).setValue(null) }
+                            }
+                            Log.d("removeItem", "onCancelled: remove success")
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.d("removeItem", "onCancelled: remove failed")
+                        }
+                    })
+
+                items.removeAt(pos)
+                notifyItemRemoved(pos)
+                dialogRemove.dismiss()
+            }
+        }
+        dialogRemove.show()
     }
 
     //뷰홀더를 만들어주는 함수

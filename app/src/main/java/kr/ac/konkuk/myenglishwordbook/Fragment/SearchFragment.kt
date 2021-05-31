@@ -1,5 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -23,12 +24,13 @@ class SearchFragment : Fragment() {
         return binding!!.root
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun init() {
         binding?.apply {
             webView.settings.javaScriptEnabled = true
             webView.settings.builtInZoomControls = true
             webView.settings.defaultTextEncodingName = "utf-8"
-            webView.loadUrl(TEMP_URL)
+            webView.loadUrl(DAUM_URL)
         }
     }
 
@@ -41,6 +43,7 @@ class SearchFragment : Fragment() {
 
     companion object{
         private const val SEARCH_URL = "https://en.dict.naver.com/#/main"
-        private const val TEMP_URL = "https://www.google.com/"
+        private const val TEST_URL = "https://www.google.com/"
+        private const val DAUM_URL = "https://dic.daum.net/"
     }
 }

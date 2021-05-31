@@ -33,6 +33,8 @@ class BookmarkFragment : Fragment() {
     lateinit var bookmarkAdapter: BookmarkAdapter
     lateinit var tts: TextToSpeech
 
+    private var currentBookmarkList: ArrayList<BookmarkItem> = ArrayList()
+
     var isTtsReady = false
 
     private lateinit var db:AppDatabase
@@ -44,7 +46,16 @@ class BookmarkFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentBookmarkBinding.inflate(layoutInflater, container, false)
 
-        db = getAppDatabase(context!!)
+        db = getAppDatabase(requireContext())
+
+        scope.launch {
+            binding?.progressBar?.visibility = View.VISIBLE
+            CoroutineScope(Dispatchers.IO).async {
+                currentBookmarkList = db.bookmarkDao().getAll() as ArrayList<BookmarkItem>
+            }.await()
+
+            binding?.progressBar?.visibility = View.GONE
+        }
 
         initRecyclerView()
         initData()
@@ -122,7 +133,6 @@ class BookmarkFragment : Fragment() {
                 scope.launch {
                     binding?.progressBar?.visibility = View.VISIBLE
                     CoroutineScope(Dispatchers.IO).async {
-
                         if (word != null) {
                             db.bookmarkDao().delete(word)
                         }
@@ -133,7 +143,7 @@ class BookmarkFragment : Fragment() {
 //                    bookmarkAdapter.notifyItemRemoved(viewHolder.adapterPosition)
                     binding?.progressBar?.visibility= View.GONE
 
-                    Toast.makeText(activity, "${word}를 즐겨찾기에서 제거하였습니다", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "${word}를 즐겨찾기에서 제거하였습니다", Toast.LENGTH_SHORT).show()
                 }
             }
         }
