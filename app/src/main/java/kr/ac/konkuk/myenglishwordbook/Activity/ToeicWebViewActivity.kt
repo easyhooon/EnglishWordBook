@@ -1,5 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Activity
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.WebViewClient
@@ -16,6 +17,7 @@ class ToeicWebViewActivity : AppCompatActivity() {
         init()
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun init() {
         binding.apply {
             webView.webViewClient = WebViewClient()
@@ -25,7 +27,8 @@ class ToeicWebViewActivity : AppCompatActivity() {
             webView.loadUrl(TOEIC_URL)
         }
     }
-    companion object{
+
+    companion object {
         private const val TOEIC_URL = "https://exam.toeic.co.kr/receipt/examSchList.php"
     }
 }

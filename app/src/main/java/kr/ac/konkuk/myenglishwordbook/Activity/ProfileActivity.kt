@@ -34,6 +34,7 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
 
     //파이어베이스 인증 객체 초기화
     private val auth = Firebase.auth
+
     //DB 객체 초기화
     //회원가입->로그인이든 구글 로그인이든 동일하게 받아옴
     private val firebaseUser = auth.currentUser!!
@@ -109,6 +110,7 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
             finish()
         }
     }
+
     private fun deleteAccount() {
         val uid = firebaseUser.uid
         val deleteRef: StorageReference = storageRef.child("profile images/$uid.jpg")
@@ -218,11 +220,31 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
                     if (testItem != null) {
                         binding.tvTestDate.text = testItem.test_date
                     }
+                    if (testItem != null) {
+                        val todayMillis = System.currentTimeMillis()
+                        binding.tvTestPeriod.text =
+                            getTestPeriod(todayMillis, testItem.test_date_millis).toString()
+                    }
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {}
         })
     }
 
     override fun onComplete(task: Task<Void?>) {}
+
+    private fun getTestPeriod(today: Long, testDay: Long): Long {
+        val diffSec: Long = (testDay - today) / 1000
+
+        Log.d("getTestPeriod", "diffSec: $diffSec")
+
+        val diffDays = diffSec / (24 * 60 * 60)
+
+        Log.d("getTestPeriod", "diffDays: $diffDays")
+
+        //25일에 출발해서 26일에 돌아오면 1박 "2일"이니까
+
+        return diffDays
+    }
 }

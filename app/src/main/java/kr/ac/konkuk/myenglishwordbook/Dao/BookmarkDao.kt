@@ -11,7 +11,7 @@ import kr.ac.konkuk.myenglishwordbook.Model.BookmarkItem
 @Dao
 interface BookmarkDao {
     @Query("SELECT * FROM bookmarkItem")
-    fun getAll():List<BookmarkItem>
+    fun getAll(): List<BookmarkItem>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertBookmark(bookmarkItem: BookmarkItem)

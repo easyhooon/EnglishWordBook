@@ -22,7 +22,8 @@ import kr.ac.konkuk.myenglishwordbook.R
 import kr.ac.konkuk.myenglishwordbook.databinding.WordItemBinding
 
 //val onItemClicked: (WordItem) -> Unit
-class WordAdapter(val items: ArrayList<WordItem>, val context: Context) : RecyclerView.Adapter<WordAdapter.ViewHolder>() {
+class WordAdapter(val items: ArrayList<WordItem>, val context: Context) :
+    RecyclerView.Adapter<WordAdapter.ViewHolder>() {
 
     //리스너 정의
     interface OnItemClickListener {
@@ -55,18 +56,18 @@ class WordAdapter(val items: ArrayList<WordItem>, val context: Context) : Recycl
             else
                 binding.meaningLayout.visibility = View.GONE
 
-            if (isCheckedItem){
+            if (isCheckedItem) {
                 binding.btnBookmark.setBackgroundColor(Color.YELLOW)
             }
 
-                binding.tvWord.setOnClickListener {
-                    itemClickListener?.onItemClick(
-                        this,
-                        it,
-                        items[adapterPosition],
-                        adapterPosition
-                    )
-                }
+            binding.tvWord.setOnClickListener {
+                itemClickListener?.onItemClick(
+                    this,
+                    it,
+                    items[adapterPosition],
+                    adapterPosition
+                )
+            }
 
             binding.btnBookmark.setOnClickListener {
                 itemClickListener?.bookmarkClick(
@@ -93,20 +94,22 @@ class WordAdapter(val items: ArrayList<WordItem>, val context: Context) : Recycl
     fun removeItem(pos: Int) {
 //        wordReference = FirebaseDatabase.getInstance().getReference(WORD)
 
-        val dialogRemove = Dialog(context, kr.ac.konkuk.myenglishwordbook.R.style.Theme_AppCompat_DayNight_Dialog_Alert)
+        val dialogRemove = Dialog(
+            context,
+            kr.ac.konkuk.myenglishwordbook.R.style.Theme_AppCompat_DayNight_Dialog_Alert
+        )
         dialogRemove.setContentView(R.layout.dialog_confirm_password)
 
         val et_password = dialogRemove.findViewById<EditText>(R.id.et_password)
         val btn_cofirm = dialogRemove.findViewById<Button>(R.id.btn_confirm)
 
         btn_cofirm.setOnClickListener {
-            if(et_password.text.isEmpty()){
+            if (et_password.text.isEmpty()) {
                 Toast.makeText(context, "비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
             }
-            if(et_password.text.toString() != items[pos].password){
+            if (et_password.text.toString() != items[pos].password) {
                 Toast.makeText(context, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
-            }
-            else{
+            } else {
                 wordReference = Firebase.database.reference.child(WORD)
 
                 val wordId = items[pos].wordId

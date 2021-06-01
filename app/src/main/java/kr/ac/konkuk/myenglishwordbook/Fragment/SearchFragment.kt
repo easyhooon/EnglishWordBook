@@ -41,7 +41,7 @@ class SearchFragment : Fragment() {
         binding = null
     }
 
-    companion object{
+    companion object {
         private const val SEARCH_URL = "https://en.dict.naver.com/#/main"
         private const val TEST_URL = "https://www.google.com/"
         private const val DAUM_URL = "https://dic.daum.net/"

@@ -1,5 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Fragment
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -28,6 +29,7 @@ import kotlin.collections.ArrayList
 
 class BookmarkFragment : Fragment() {
     var binding: FragmentBookmarkBinding? = null
+
     //ui갱신이 가능한 코루틴
     val scope = CoroutineScope(Dispatchers.Main)
     var bookmarkList: ArrayList<BookmarkItem> = ArrayList()
@@ -39,7 +41,7 @@ class BookmarkFragment : Fragment() {
 
     var isTtsReady = false
 
-    private lateinit var db:AppDatabase
+    private lateinit var db: AppDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +65,7 @@ class BookmarkFragment : Fragment() {
         initData()
         initTTS()
         initProfileButton()
+        initOptionButton()
 
         return binding!!.root
     }
@@ -74,6 +77,24 @@ class BookmarkFragment : Fragment() {
         }
     }
 
+    private fun initOptionButton() {
+        binding?.option?.setOnClickListener {
+            val ad = AlertDialog.Builder(context)
+            ad.setMessage("현재 이 기능은 개발 중 입니다.")
+            ad.setPositiveButton(
+                "취소"
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            ad.setNegativeButton(
+                "확인"
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            ad.show()
+        }
+    }
+
     private fun initData() {
         scope.launch {
             binding?.progressBar?.visibility = View.VISIBLE
@@ -82,13 +103,19 @@ class BookmarkFragment : Fragment() {
                 bookmarkList.addAll(bookmarks)
             }.await()
             bookmarkAdapter.notifyDataSetChanged()
-            binding?.progressBar?.visibility= View.GONE
+            binding?.progressBar?.visibility = View.GONE
         }
     }
 
     private fun initRecyclerView() {
-        binding?.bookmarkRecyclerView?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding?.bookmarkRecyclerView?.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+        binding?.bookmarkRecyclerView?.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding?.bookmarkRecyclerView?.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                LinearLayoutManager.VERTICAL
+            )
+        )
 
         bookmarkAdapter = BookmarkAdapter(bookmarkList)
 
@@ -96,7 +123,7 @@ class BookmarkFragment : Fragment() {
 
 
         //인터페이스가 맴버로 있었기 때문에 맴버에 해당하는 정보 객체로 만들어서 세팅
-        bookmarkAdapter.itemClickListener = object: BookmarkAdapter.OnItemClickListener{
+        bookmarkAdapter.itemClickListener = object : BookmarkAdapter.OnItemClickListener {
             override fun onItemClick(
                 holder: BookmarkAdapter.ViewHolder,
                 view: View,
@@ -151,7 +178,7 @@ class BookmarkFragment : Fragment() {
                     bookmarkAdapter.removeItem(viewHolder.adapterPosition)
                     bookmarkAdapter.notifyDataSetChanged()
 //                    bookmarkAdapter.notifyItemRemoved(viewHolder.adapterPosition)
-                    binding?.progressBar?.visibility= View.GONE
+                    binding?.progressBar?.visibility = View.GONE
 
                     Toast.makeText(context, "${word}를 즐겨찾기에서 제거하였습니다", Toast.LENGTH_SHORT).show()
                 }

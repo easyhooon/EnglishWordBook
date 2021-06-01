@@ -26,7 +26,6 @@ import kr.ac.konkuk.myenglishwordbook.R
 import kr.ac.konkuk.myenglishwordbook.databinding.ActivityLogInBinding
 
 
-
 class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
 
     private var backBtnTime: Long = 0 // 뒤로가기 두번 눌러 종료 용 변수
@@ -50,13 +49,19 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         //java에서 Firebase.getInstance()와 같이 Firebase Auth를 initialize 해주는 코드
         auth = Firebase.auth
         //초기화
-        callbackManager = CallbackManager.Factory.create()
 
-        initLoginButton()
-        initSignUpButton()
-        initGoogleLoginButton()
-        initFacebookLoginButton()
 
+        if (auth.currentUser != null) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        } else {
+            callbackManager = CallbackManager.Factory.create()
+
+            initLoginButton()
+            initSignUpButton()
+            initGoogleLoginButton()
+            initFacebookLoginButton()
+        }
     }
 
     private fun initLoginButton() {
@@ -118,7 +123,7 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
 
     private fun initFacebookLoginButton() {
         //유저에게 가져올 정보 -> 이메일과 프로필
-        binding.facebookLoginButton.setPermissions(EMAIL,PROFILE)
+        binding.facebookLoginButton.setPermissions(EMAIL, PROFILE)
         binding.facebookLoginButton.registerCallback(
             callbackManager, object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult) {
@@ -132,10 +137,12 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                             } else {
                                 Toast.makeText(
                                     this@LogInActivity,
-                                    FACEBOOK_LOGIN_FAIL, Toast.LENGTH_SHORT).show()
+                                    FACEBOOK_LOGIN_FAIL, Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                 }
+
                 override fun onCancel() {}
 
                 override fun onError(error: FacebookException?) {
@@ -173,7 +180,7 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         }
     }
 
-    private fun handleSuccessSignUp(name:String, email:String) {
+    private fun handleSuccessSignUp(name: String, email: String) {
         if (auth.currentUser == null) {
             startActivity(Intent(this, LogInActivity::class.java))
             return
@@ -196,8 +203,6 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             finish()
         }
     }
-
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

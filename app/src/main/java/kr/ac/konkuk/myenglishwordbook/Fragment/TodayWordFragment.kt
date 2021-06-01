@@ -34,8 +34,8 @@ class TodayWordFragment : Fragment() {
 
     private fun initViews() {
         //-2 -1 0 1 2
-        binding?.viewPager?.setPageTransformer{ page, position ->
-            when{
+        binding?.viewPager?.setPageTransformer { page, position ->
+            when {
                 //alpha값이 1이다 -> 보인다
                 //alpha값이 0이다 -> 보이지않는다
                 //0~1 -> 슬라이드되면서 희미해짐
@@ -53,7 +53,7 @@ class TodayWordFragment : Fragment() {
                 else -> {
                     //보이다가 사라짐
                     //효과가 드라마틱하지 않으므로 기울기를 더 크게게
-                    page.alpha = 1F - 2* position.absoluteValue
+                    page.alpha = 1F - 2 * position.absoluteValue
                 }
             }
         }
@@ -70,7 +70,7 @@ class TodayWordFragment : Fragment() {
         )
         remoteConfig.fetchAndActivate().addOnCompleteListener {
             binding?.progressBar?.visibility = View.GONE
-            if(it.isSuccessful){
+            if (it.isSuccessful) {
                 val todayWords = parseQuotesJson(remoteConfig.getString("today_words"))
                 val isMeaningRevealed = remoteConfig.getBoolean("is_meaning_revealed")
                 //어댑터를 추가해서 랜더링 작업을 수행
@@ -95,7 +95,7 @@ class TodayWordFragment : Fragment() {
     private fun parseQuotesJson(json: String): List<TodayWordItem> {
         val jsonArray = JSONArray(json)
         var jsonList = emptyList<JSONObject>()
-        for(index in 0 until jsonArray.length()) {
+        for (index in 0 until jsonArray.length()) {
             val jsonObject = jsonArray.getJSONObject(index)
             jsonObject?.let {
                 //뒤에 한개씩 jsonObject들이 붙음

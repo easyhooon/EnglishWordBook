@@ -8,7 +8,7 @@ import kr.ac.konkuk.myenglishwordbook.Dao.BookmarkDao
 import kr.ac.konkuk.myenglishwordbook.Model.BookmarkItem
 
 @Database(entities = [BookmarkItem::class], version = 1)
-abstract class AppDatabase: RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarkDao(): BookmarkDao
 }
 

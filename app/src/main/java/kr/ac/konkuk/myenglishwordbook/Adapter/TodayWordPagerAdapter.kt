@@ -18,14 +18,15 @@ class TodayWordPagerAdapter
     RecyclerView.Adapter<TodayWordPagerAdapter.ViewHolder>() {
 
     //bind 구현
-    inner class ViewHolder(private val binding: TodayWordItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: TodayWordItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
         fun bind(todayWord: TodayWordItem, isMeaningRevealed: Boolean) {
             //명언 따옴표로 감싸기
             binding.wordTextView.text = todayWord.word
 
-            if(isMeaningRevealed) {
+            if (isMeaningRevealed) {
                 binding.meaningTextView.text = todayWord.meaning
                 binding.meaningTextView.visibility = View.VISIBLE
             } else {
@@ -34,11 +35,12 @@ class TodayWordPagerAdapter
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):ViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = TodayWordItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
-            false)
+            false
+        )
 
         return ViewHolder(view)
     }

@@ -1,5 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Fragment
 
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -47,33 +48,6 @@ class WordFragment : Fragment() {
     private var wordList: ArrayList<WordItem> = ArrayList()
     private var currentBookmarkList: ArrayList<BookmarkItem> = ArrayList()
 
-//    private val listener = object : ChildEventListener {
-//        override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//            //model 클래스 자체를 업로드하고 다운받음
-//            val wordItem = snapshot.getValue(WordItem::class.java)
-//            wordItem ?: return
-//
-//            for (i in currentBookmarkList) {
-//                if (wordItem.word == i.word) {
-//                    wordItem.isClicked = !wordItem.isClicked
-//                }
-//            }
-//            //reverse order 새로운 단어 추가시 제일 앞으로 오도록
-//            wordList.add(0, wordItem)
-//            wordAdapter.submitList(wordList)
-//            //데이터를 불러올때 db에 있는 단어인지를 분석해서 아이콘의 색상을 변경하면 어떨까
-//
-//            wordAdapter.notifyDataSetChanged()
-//        }
-//
-//        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-//        override fun onChildRemoved(snapshot: DataSnapshot) {}
-//
-//        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-//        override fun onCancelled(error: DatabaseError) {}
-//
-//    }
-
     var binding: FragmentWordBinding? = null
     val scope = CoroutineScope(Dispatchers.Main)
 
@@ -96,8 +70,27 @@ class WordFragment : Fragment() {
         initTTS()
         initRefresh()
         initProfileButton()
+        initOptionButton()
 
         return binding!!.root
+    }
+
+    private fun initOptionButton() {
+        binding?.option?.setOnClickListener {
+            val ad = AlertDialog.Builder(context)
+            ad.setMessage("현재 이 기능은 개발 중 입니다.")
+            ad.setPositiveButton(
+                "취소"
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            ad.setNegativeButton(
+                "확인"
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            ad.show()
+        }
     }
 
     private fun initProfileButton() {
@@ -135,12 +128,6 @@ class WordFragment : Fragment() {
                         }
                     }
 
-//                    //안됨
-//                    for(i in wordList){
-//                        if(wordItem.isChecked){
-//                            binding.btnBookmark.setBackgroundColor(Color.YELLOW)
-//                        }
-//                    }
                     wordList.add(0, wordItem)
                 }
                 //처음 또는 단어장에 단어가 존재하지 않을 경우 Firebase RealTimeDatabase 에 text파일의 Default 단어를 저장하는 코드
@@ -165,7 +152,6 @@ class WordFragment : Fragment() {
 
                 wordAdapter.notifyDataSetChanged() // 리스트 저장 및 새로고침
             }
-
 
             override fun onCancelled(error: DatabaseError) {
 
@@ -260,7 +246,6 @@ class WordFragment : Fragment() {
                         } else {
                             Toast.makeText(activity, "${data.word}는 이미 추가된 단어입니다", Toast.LENGTH_SHORT).show()
                         }
-//                        wordAdapter.notifyDataSetChanged()
                     }
                 }
                 else {
@@ -271,7 +256,6 @@ class WordFragment : Fragment() {
                         }.await()
                         binding?.progressBar?.visibility = View.GONE
                         Toast.makeText(context, "${data.word} 을(를) 즐겨찾기에서 삭제하였습니다", Toast.LENGTH_SHORT).show()
-//                        wordAdapter.notifyDataSetChanged()
                     }
                 }
             }
@@ -301,7 +285,6 @@ class WordFragment : Fragment() {
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(binding?.wordRecyclerView)
 
-//        wordReference.addChildEventListener(listener)
     }
 
     //tts서비스를 사용할 준비가 됬을때 호출되는 콜백함수
@@ -331,6 +314,5 @@ class WordFragment : Fragment() {
         tts.shutdown()
         binding = null
 
-//        wordReference.removeEventListener(listener)
     }
 }

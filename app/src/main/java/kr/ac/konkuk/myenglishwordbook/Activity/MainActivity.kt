@@ -54,7 +54,8 @@ class MainActivity : AppCompatActivity() {
 
         //프래그먼트 위에 있는 editText에 입력을 할때 키보드에 의해 가려질때 사용
         window.setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+        );
 
         //첫화면이 오늘의 단어이므로 설정 먼저 해줌
         binding.navView.selectedItemId = R.id.nav_today

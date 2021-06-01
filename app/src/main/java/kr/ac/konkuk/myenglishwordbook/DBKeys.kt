@@ -13,5 +13,6 @@ class DBKeys {
         const val TEST_ID = "testId"
         const val TEST_NAME = "test_name"
         const val TEST_DATE = "test_date"
+        const val TEST_DATE_MILLIS = "test_date_millis"
     }
 }

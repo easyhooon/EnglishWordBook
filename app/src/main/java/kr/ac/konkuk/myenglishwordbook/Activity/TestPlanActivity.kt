@@ -1,8 +1,9 @@
 package kr.ac.konkuk.myenglishwordbook.Activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -11,14 +12,18 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.TEST
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.TEST_DATE
+import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.TEST_DATE_MILLIS
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.TEST_ID
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.TEST_NAME
 import kr.ac.konkuk.myenglishwordbook.databinding.ActivityTestPlanBinding
 import java.util.*
+import kotlin.properties.Delegates
 
 
 class TestPlanActivity : AppCompatActivity() {
-    lateinit var binding:ActivityTestPlanBinding
+    lateinit var binding: ActivityTestPlanBinding
+
+    var testDayMillis by Delegates.notNull<Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,33 +35,27 @@ class TestPlanActivity : AppCompatActivity() {
         initCancel()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initCalender() {
+
         binding.ivCalendar.setOnClickListener {
 
-            // now register the text view and the button with
-
-            // now create instance of the material date picker
-            // builder make sure to add the "datePicker" which
-            // is normal material date picker which is the first
-            // type of the date picker in material design date
-            // picker
             val materialDateBuilder = MaterialDatePicker.Builder.datePicker();
 
-            // now define the properties of the
-            // materialDateBuilder that is title text as SELECT A DATE
             materialDateBuilder.setTitleText("시험 날짜를 선택해주세요");
 
-            // now create the instance of the material date
-            // picker
             val materialDatePicker = materialDateBuilder.build();
 
-            materialDatePicker.show(supportFragmentManager, "MATERIAL_DATE_PICKER");
+            materialDatePicker.show(supportFragmentManager, "달력");
 
+            materialDatePicker.addOnPositiveButtonClickListener {
+                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
 
-            // now handle the positive button click from the
-            // material design date picker
-            materialDatePicker.addOnPositiveButtonClickListener{
-                binding.tvTestDate.text = materialDatePicker.headerText
+                calendar.time = Date(it)
+                binding.tvTestDate.text = "${calendar.get(Calendar.MONTH) + 1}월 " +
+                        "${calendar.get(Calendar.DAY_OF_MONTH)}일"
+                Log.d("월 일", binding.tvTestDate.text.toString())
+                testDayMillis = materialDatePicker.selection!!
             }
         }
     }
@@ -70,7 +69,7 @@ class TestPlanActivity : AppCompatActivity() {
 
     private fun initRegister() {
         binding.btnRegister.setOnClickListener {
-            if (binding.etTestName.toString().isEmpty()){
+            if (binding.etTestName.toString().isEmpty()) {
                 Toast.makeText(this@TestPlanActivity, "시험명을 입력해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener  //다음이 진행되지 않음
             }
@@ -88,6 +87,7 @@ class TestPlanActivity : AppCompatActivity() {
             test[TEST_ID] = testId
             test[TEST_NAME] = testName
             test[TEST_DATE] = testDate
+            test[TEST_DATE_MILLIS] = testDayMillis
             testRef.updateChildren(test)
 
             startActivity(Intent(this, ProfileActivity::class.java))
