@@ -8,7 +8,7 @@
     <string name="today_word">오늘의 단어</string>
     <string name="wordbook">WORDBOOK</string>
     <string name="sign_up">회원가입</string>
-    <string name="password">비밀번호</string>
+    <string name="password">Password</string>
     <string name="add_word">단어 추가</string>
     <string name="confirm">확인</string>
     <string name="word_list">단어 목록</string>
@@ -19,4 +19,6 @@
     <string name="setting_test_plan">시험일정 설정</string>
     <string name="nickname">닉네임</string>
     <string name="show_toeic_plan">토익일정 보기</string>
+    <string name="email">Email</string>
+    <string name="facebook_app_id">345104280300734</string> <string name="fb_login_protocol_scheme">fb345104280300734</string>
 </resources>
