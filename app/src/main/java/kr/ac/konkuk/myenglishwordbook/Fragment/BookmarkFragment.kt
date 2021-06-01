@@ -1,5 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -16,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kr.ac.konkuk.myenglishwordbook.Activity.ProfileActivity
 import kr.ac.konkuk.myenglishwordbook.Adapter.BookmarkAdapter
 import kr.ac.konkuk.myenglishwordbook.DB.AppDatabase
 import kr.ac.konkuk.myenglishwordbook.DB.getAppDatabase
@@ -60,8 +62,16 @@ class BookmarkFragment : Fragment() {
         initRecyclerView()
         initData()
         initTTS()
+        initProfileButton()
 
         return binding!!.root
+    }
+
+    private fun initProfileButton() {
+        binding?.ProfileImage?.setOnClickListener {
+            val intent = Intent(activity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun initData() {
@@ -95,7 +105,7 @@ class BookmarkFragment : Fragment() {
             ) {
                 //뜻 레이아웃이 열려있지 않을때만 음성이 나옴
                 if (isTtsReady && !data.isClicked) {
-                    Log.d("TTS", "tts가 실행중입니다")
+                    Log.d("TTS", "tts 가 실행중입니다")
                     tts.speak(data.word, TextToSpeech.QUEUE_ADD, null, null)
                 }
 

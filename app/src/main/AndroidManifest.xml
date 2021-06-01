@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyEnglishWordBook"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.ProfileActivity"></activity>
+        <activity android:name=".Activity.ToeicWebViewActivity"></activity>
+        <activity android:name=".Activity.TestPlanActivity" />
+        <activity android:name=".Activity.ProfileActivity" />
         <activity android:name=".Activity.SignUpActivity" />
         <activity android:name=".Activity.LogInActivity" />
         <activity android:name=".Activity.SplashActivity">

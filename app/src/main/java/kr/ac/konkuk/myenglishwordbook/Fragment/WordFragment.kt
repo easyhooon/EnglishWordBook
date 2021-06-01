@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kr.ac.konkuk.myenglishwordbook.Activity.ProfileActivity
 import kr.ac.konkuk.myenglishwordbook.Adapter.WordAdapter
 import kr.ac.konkuk.myenglishwordbook.DB.AppDatabase
 import kr.ac.konkuk.myenglishwordbook.DB.getAppDatabase
@@ -89,15 +90,33 @@ class WordFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentWordBinding.inflate(layoutInflater, container, false)
 
-
-        wordReference = Firebase.database.reference.child(WORD)
-
         initDB()
         initRecyclerView()
         initData()
         initTTS()
+        initRefresh()
+        initProfileButton()
 
         return binding!!.root
+    }
+
+    private fun initProfileButton() {
+        binding?.ProfileImage?.setOnClickListener {
+            val intent = Intent(activity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    //새로고침 구현
+    private fun initRefresh() {
+        binding?.swipe?.setOnRefreshListener {
+//            binding!!.swipe.isRefreshing = true
+            initDB()
+            initRecyclerView()
+            initData()
+            binding!!.swipe.isRefreshing = false
+
+        }
     }
 
     private fun initData() {

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "978625993207",
+    "firebase_url": "https://myenglishbook-49e5c-default-rtdb.firebaseio.com",
     "project_id": "myenglishbook-49e5c",
     "storage_bucket": "myenglishbook-49e5c.appspot.com"
   },
@@ -9,10 +10,55 @@
       "client_info": {
         "mobilesdk_app_id": "1:978625993207:android:e709a377e6b4446404b6f2",
         "android_client_info": {
+          "package_name": "kr.ac.konkuk.englishwordbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "978625993207-37jekbetv6lqo9aulr7q6860467md647.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.ac.konkuk.englishwordbook",
+            "certificate_hash": "c7ef690eac5a3cef2b30aa9e0005a6fda15c9116"
+          }
+        },
+        {
+          "client_id": "978625993207-nk7npfv36v2cqbik87nn3lbeilh4977n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuhSVo5D9oflJ43YbJ1CACt0rGOyiX824"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "978625993207-nk7npfv36v2cqbik87nn3lbeilh4977n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978625993207:android:6ebe84636c63ed7a04b6f2",
+        "android_client_info": {
           "package_name": "kr.ac.konkuk.myenglishwordbook"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "978625993207-q19unvlll18sobod2mc3v2mlc9oa53b7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.ac.konkuk.myenglishwordbook",
+            "certificate_hash": "c7ef690eac5a3cef2b30aa9e0005a6fda15c9116"
+          }
+        },
         {
           "client_id": "978625993207-nk7npfv36v2cqbik87nn3lbeilh4977n.apps.googleusercontent.com",
           "client_type": 3

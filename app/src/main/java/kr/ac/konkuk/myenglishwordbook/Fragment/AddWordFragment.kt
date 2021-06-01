@@ -1,5 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kr.ac.konkuk.myenglishwordbook.Activity.ProfileActivity
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.WORD
 import kr.ac.konkuk.myenglishwordbook.Model.WordItem
 import kr.ac.konkuk.myenglishwordbook.databinding.FragmentAddWordBinding
@@ -34,12 +36,21 @@ class AddWordFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentAddWordBinding.inflate(layoutInflater, container, false)
 
-        init()
+        initAddButton()
+        initProfileButton()
+
 
         return binding!!.root
     }
 
-    private fun init() {
+    private fun initProfileButton() {
+        binding?.ProfileImage?.setOnClickListener {
+            val intent = Intent(activity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun initAddButton() {
         binding?.btnAdd?.setOnClickListener {
             val wordId = wordReference.push().key
             val word = binding!!.etWord.text.toString()
@@ -56,7 +67,9 @@ class AddWordFragment : Fragment() {
                 binding?.progressBar?.visibility= View.GONE
             }
             Toast.makeText(context, "단어를 추가하였습니다", Toast.LENGTH_SHORT).show()
-
+            binding!!.etWord.text = null
+            binding!!.etMeaning.text = null
+            binding!!.etPassword.text = null
         }
     }
 

@@ -2,6 +2,7 @@ package kr.ac.konkuk.myenglishwordbook.Activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.Auth
@@ -9,11 +10,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.*
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.PROFILE_IMAGE
+import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.SIGN_UP
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.USER
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.USER_ID
 import kr.ac.konkuk.myenglishwordbook.R
@@ -26,6 +29,8 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     private lateinit var auth: FirebaseAuth
 
     lateinit var binding: ActivityLogInBinding
+
+    lateinit var userName: String
 
     private lateinit var googleApiClient: GoogleApiClient
 
@@ -59,8 +64,12 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        startActivity(Intent(this, ProfileActivity::class.java))
-//                        startActivity(Intent(this, MainActivity::class.java))
+                        val spf = getSharedPreferences(SIGN_UP, MODE_PRIVATE)
+                        if (spf.contains(USER_NAME)) {
+                            userName = spf.getString(USER_NAME, "닉네임").toString()
+                        }
+                        handleSuccessSignUp(userName, email)
+                        startActivity(Intent(this, MainActivity::class.java))
                         //이제 필요없는 화면이므로 파괴
                         finish()
                     } else {
@@ -72,12 +81,14 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
 
     private fun initSignUpButton() {
         binding.signUpButton.setOnClickListener {
-            startActivity(Intent(this, SignUpActivity::class.java))
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
         }
     }
 
     private fun initGoogleLoginButton() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        val gso = GoogleSignInOptions
+            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
@@ -103,16 +114,42 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             val userId = auth.currentUser?.uid.orEmpty()
             val userName = auth.currentUser?.displayName.orEmpty()
             val userEmail = auth.currentUser?.email.orEmpty()
+            val userProfileImage = auth.currentUser?.photoUrl.toString()
             //reference가 최상위-> child child로 경로 지정
             //경로가 존재하지 않으면 생성, 있으면 그 경로를 가져옴
-            val currentUserDB = Firebase.database.reference.child(USER).child(userId)
+            val userRef = Firebase.database.reference.child(USER).child(userId)
             val user = mutableMapOf<String, Any>()
             user[USER_ID] = userId
             user[USER_NAME] = userName
             user[USER_EMAIL] = userEmail
-            currentUserDB.updateChildren(user)
+            user[PROFILE_IMAGE] = userProfileImage
+            userRef.updateChildren(user)
 
             startActivity(Intent(this, MainActivity::class.java))
+            //이제 필요없는 화면이므로 파괴
+            finish()
+        }
+    }
+
+    private fun handleSuccessSignUp(name:String, email:String) {
+        if (auth.currentUser == null) {
+            startActivity(Intent(this, LogInActivity::class.java))
+            return
+        } else {
+            //currentUser는 nullable이기 때문에 위에 예외처리하였음
+            val userReference = Firebase.database.reference.child(USER)
+            val userId = auth.currentUser?.uid.orEmpty()
+            //reference가 최상위-> child child로 경로 지정
+            //경로가 존재하지 않으면 생성, 있으면 그 경로를 가져옴
+            val userRef = userReference.child(userId)
+            val user = mutableMapOf<String, Any>()
+            user[USER_ID] = userId
+            user[USER_NAME] = name
+            user[USER_EMAIL] = email
+            user[PROFILE_IMAGE] = ""
+            userRef.updateChildren(user)
+
+            startActivity(Intent(this, LogInActivity::class.java))
             //이제 필요없는 화면이므로 파괴
             finish()
         }
@@ -166,6 +203,7 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         const val USER_NAME = "user_name"
         const val USER_EMAIL = "user_email"
         const val LOGIN_FAIL = "로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요."
+        const val ENTER_NAME = "이름을 입력해주세요"
         const val ENTER_EMAIL = "이메일을 입력해주세요"
         const val ENTER_PASSWORD = "비밀번호를 입력해주세요"
         const val GOOGLE_LOGIN_FAIL = "구글 로그인에 실패했습니다"

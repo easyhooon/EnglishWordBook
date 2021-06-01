@@ -16,11 +16,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/left_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_marginStart="15dp"
-            android:src="@drawable/ic_baseline_dehaze_24"
+            android:src="@drawable/ic_left"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -48,12 +48,81 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbarLayout" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/iv_profileImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarLayout"
+        app:layout_constraintVertical_bias="1.0">
+
+        <TextView
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="다음"
+            android:textSize="24sp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/bm_font"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_testName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
+            android:textSize="24sp"
+            android:text="토익"
+            android:fontFamily="@font/bm_font"
+            app:layout_constraintStart_toEndOf="@id/next"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
+            android:textSize="24sp"
+            android:text="시험은"
+            android:fontFamily="@font/bm_font"
+            app:layout_constraintStart_toEndOf="@id/tv_testName"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_testDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textSize="24sp"
+            android:text="xx월 xx일"
+            android:fontFamily="@font/bm_font"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/next" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textSize="24sp"
+            android:text="입니다"
+            android:fontFamily="@font/bm_font"
+            app:layout_constraintStart_toEndOf="@id/tv_testDate"
+            app:layout_constraintTop_toBottomOf="@+id/next"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_profileImage"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="95dp"
-        android:src="@drawable/ic_baseline_person_24"
+        android:layout_marginTop="110dp"
+        android:src="@drawable/profile_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbarLayout" />
@@ -62,20 +131,49 @@
         android:id="@+id/tv_nickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="닉네임"
+        android:text="@string/nickname"
+        android:fontFamily="@font/bm_font"
         android:textColor="#000000"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_profileImage" />
 
+    <Button
+        android:id="@+id/btn_editTestPlan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="#78D2BE"
+        android:fontFamily="@font/bm_font"
+        android:ems="8"
+        android:text="@string/setting_test_plan"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toStartOf="@+id/btn_showTestPlan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_nickname" />
+
+    <Button
+        android:id="@+id/btn_showTestPlan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="#78D2BE"
+        android:fontFamily="@font/bm_font"
+        android:ems="8"
+        android:text="@string/show_toeic_plan"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/tv_nickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_editTestPlan" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="63dp"
+        android:layout_marginTop="96dp"
         android:background="@drawable/borderline_top_bottom"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/tv_nickname">
@@ -91,10 +189,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="left|center_vertical"
-                android:paddingLeft="15dp"
-                android:text="연결된 계정"
+                android:gravity="start|center_vertical"
+                android:text="@string/login_email"
                 android:textColor="#000000"
+                android:fontFamily="@font/bm_font"
                 android:textSize="20sp" />
 
             <TextView
@@ -102,10 +200,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:gravity="right|center_vertical"
-                android:paddingRight="15dp"
-                android:text="username@gmail.com"
-                android:textSize="20sp" />
+                android:gravity="end|center_vertical"
+                android:paddingEnd="15dp"
+                android:text="@string/default_email"
+                android:fontFamily="@font/bm_font"
+                android:textSize="20sp"
+                tools:ignore="RtlSymmetry" />
 
         </LinearLayout>
 
@@ -113,28 +213,31 @@
 
     <Button
         android:id="@+id/btn_logout"
-        android:layout_width="180dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:background="#78D2BE"
-        android:text="LOGOUT"
+        android:fontFamily="@font/bm_font"
+        android:ems="8"
+        android:text="로그아웃"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_deleteAccount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/btn_deleteAccount"
-        android:layout_width="180dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="32dp"
         android:background="#AFABAB"
-        android:text="Delete Account"
+        android:fontFamily="@font/bm_font"
+        android:ems="8"
+        android:text="@string/delete_account"
+        app:layout_constraintStart_toEndOf="@id/btn_logout"
         android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="@+id/btn_logout"
-        app:layout_constraintStart_toStartOf="@+id/btn_logout"
-        app:layout_constraintTop_toBottomOf="@+id/btn_logout" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
