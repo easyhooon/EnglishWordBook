@@ -76,9 +76,6 @@ class WordAdapter(val items: ArrayList<WordItem>, val context: Context) :
                     items[adapterPosition],
                     adapterPosition
                 )
-//                if (isCheckedItem){
-//                    binding.btnBookmark.setBackgroundColor(Color.YELLOW)
-//                }
             }
         }
     }
@@ -92,16 +89,17 @@ class WordAdapter(val items: ArrayList<WordItem>, val context: Context) :
     }
 
     fun removeItem(pos: Int) {
-//        wordReference = FirebaseDatabase.getInstance().getReference(WORD)
-
         val dialogRemove = Dialog(
             context,
-            kr.ac.konkuk.myenglishwordbook.R.style.Theme_AppCompat_DayNight_Dialog_Alert
+            R.style.Theme_AppCompat_DayNight_Dialog_Alert
         )
-        dialogRemove.setContentView(R.layout.dialog_confirm_password)
+        dialogRemove.setContentView(R.layout.dialog_remove_word)
+        //다이얼로그 바깥쪽 터치 막기
+        dialogRemove.setCancelable(false)
 
         val et_password = dialogRemove.findViewById<EditText>(R.id.et_password)
         val btn_cofirm = dialogRemove.findViewById<Button>(R.id.btn_confirm)
+        val btn_cancel = dialogRemove.findViewById<Button>(R.id.btn_cancel)
 
         btn_cofirm.setOnClickListener {
             if (et_password.text.isEmpty()) {
@@ -135,6 +133,11 @@ class WordAdapter(val items: ArrayList<WordItem>, val context: Context) :
                 notifyItemRemoved(pos)
                 dialogRemove.dismiss()
             }
+        }
+
+        btn_cancel.setOnClickListener {
+            dialogRemove.dismiss()
+            notifyDataSetChanged()
         }
         dialogRemove.show()
     }

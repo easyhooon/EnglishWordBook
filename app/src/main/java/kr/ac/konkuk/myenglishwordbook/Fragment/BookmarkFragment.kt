@@ -36,8 +36,8 @@ class BookmarkFragment : Fragment() {
 
     lateinit var bookmarkAdapter: BookmarkAdapter
     lateinit var tts: TextToSpeech
-
-    private var currentBookmarkList: ArrayList<BookmarkItem> = ArrayList()
+//
+//    private var currentBookmarkList: ArrayList<BookmarkItem> = ArrayList()
 
     var isTtsReady = false
 
@@ -50,17 +50,7 @@ class BookmarkFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentBookmarkBinding.inflate(layoutInflater, container, false)
 
-        db = getAppDatabase(requireContext())
-
-        scope.launch {
-            binding?.progressBar?.visibility = View.VISIBLE
-            CoroutineScope(Dispatchers.IO).async {
-                currentBookmarkList = db.bookmarkDao().getAll() as ArrayList<BookmarkItem>
-            }.await()
-
-            binding?.progressBar?.visibility = View.GONE
-        }
-
+        initDB()
         initRecyclerView()
         initData()
         initTTS()
@@ -68,6 +58,10 @@ class BookmarkFragment : Fragment() {
         initOptionButton()
 
         return binding!!.root
+    }
+
+    private fun initDB() {
+        db = getAppDatabase(requireContext())
     }
 
     private fun initProfileButton() {

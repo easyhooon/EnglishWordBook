@@ -112,51 +112,58 @@ class WordFragment : Fragment() {
     }
 
     private fun initData() {
-        wordReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                wordList.clear() //초기화(기존 리스트가 존재하지 않게 초기화)
+        scope.launch {
+            binding?.progressBar?.visibility = View.VISIBLE
+            CoroutineScope(Dispatchers.IO).async {
+                wordReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        wordList.clear() //초기화(기존 리스트가 존재하지 않게 초기화)
 
-                // 파이어베이스 db의 데이터들을 가지고 오는 곳
-                for (snapshot in dataSnapshot.children) {
-                    val wordItem: WordItem? = snapshot.getValue(WordItem::class.java)
-                    wordItem ?: return
+                        // 파이어베이스 db의 데이터들을 가지고 오는 곳
+                        for (snapshot in dataSnapshot.children) {
+                            val wordItem: WordItem? = snapshot.getValue(WordItem::class.java)
+                            wordItem ?: return
 
-                    for (i in currentBookmarkList) {
-                        if (wordItem.word == i.word) {
-                            wordItem.isChecked = !wordItem.isChecked
+                            for (i in currentBookmarkList) {
+                                if (wordItem.word == i.word) {
+                                    wordItem.isChecked = !wordItem.isChecked
+                                }
+                            }
+
+                            wordList.add(0, wordItem)
                         }
+                        //처음 또는 단어장에 단어가 존재하지 않을 경우 Firebase RealTimeDatabase 에 text파일의 Default 단어를 저장하는 코드
+                        if (wordList.isEmpty()) {
+                            val scan = Scanner(resources.openRawResource(R.raw.words))
+
+                            while (scan.hasNextLine()) {
+                                val wordId = wordReference.push().key
+                                val word = scan.nextLine()
+                                val meaning = scan.nextLine()
+                                val password = scan.nextLine()
+                                //기본은 눌려있지 않은 상태이므로 false로 설정해둠
+                                val wordItem =
+                                    wordId?.let { WordItem(it, word, meaning, password, false, false) }
+                                wordItem ?: return
+                                wordReference.push().setValue(wordItem)
+                                wordList.add(0, wordItem)
+                            }
+                            scan.close()
+                            Toast.makeText(context, "기본 단어의 비밀번호는 0000입니다.", Toast.LENGTH_SHORT).show()
+                        }
+
+                        wordAdapter.notifyDataSetChanged() // 리스트 저장 및 새로고침
                     }
 
-                    wordList.add(0, wordItem)
-                }
-                //처음 또는 단어장에 단어가 존재하지 않을 경우 Firebase RealTimeDatabase 에 text파일의 Default 단어를 저장하는 코드
-                if (wordList.isEmpty()) {
-                    val scan = Scanner(resources.openRawResource(R.raw.words))
+                    override fun onCancelled(error: DatabaseError) {
 
-                    while (scan.hasNextLine()) {
-                        val wordId = wordReference.push().key
-                        val word = scan.nextLine()
-                        val meaning = scan.nextLine()
-                        val password = scan.nextLine()
-                        //기본은 눌려있지 않은 상태이므로 false로 설정해둠
-                        val wordItem =
-                            wordId?.let { WordItem(it, word, meaning, password, false, false) }
-                        wordItem ?: return
-                        wordReference.push().setValue(wordItem)
-                        wordList.add(0, wordItem)
                     }
-                    scan.close()
-                    Toast.makeText(context, "기본 단어의 비밀번호는 0000입니다.", Toast.LENGTH_SHORT).show()
-                }
 
-                wordAdapter.notifyDataSetChanged() // 리스트 저장 및 새로고침
-            }
+                })
+            }.await()
+            binding?.progressBar?.visibility = View.GONE
+        }
 
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-        })
 
     }
 

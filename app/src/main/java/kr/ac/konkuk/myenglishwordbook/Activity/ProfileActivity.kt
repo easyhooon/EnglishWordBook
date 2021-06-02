@@ -38,7 +38,6 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
     private val auth = Firebase.auth
 
     //DB 객체 초기화
-    //회원가입->로그인이든 구글 로그인이든 동일하게 받아옴
     private val firebaseUser = auth.currentUser!!
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
@@ -118,14 +117,14 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
         val deleteRef: StorageReference = storageRef.child("profile images/$uid.jpg")
         if (deleteRef != null) {
             Log.d(ContentValues.TAG, "onDataChange: desertRef: $deleteRef")
-            deleteRef.delete().addOnSuccessListener(OnSuccessListener<Void?> {
+            deleteRef.delete().addOnSuccessListener {
                 Toast.makeText(
                     this@ProfileActivity,
                     "계정을 삭제하였습니다.",
                     Toast.LENGTH_SHORT
                 ).show()
-            }).addOnFailureListener {
-                //Toast.makeText(this, "계정을 삭제하는데 실패하였습니디", Toast.LENGTH_SHORT).show();
+            }.addOnFailureListener {
+                Toast.makeText(this, "계정을 삭제하는데 실패하였습니디", Toast.LENGTH_SHORT).show();
             }
             firebaseUser.delete().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -155,7 +154,7 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
         //입력 로그인용 유저의 데이터를 불러오기 위한 uid
         val uid = firebaseUser.uid
         val userRef = Firebase.database.reference.child(USER).child(uid)
-//        val userRef = FirebaseDatabase.getInstance().getReference(USER).child(uid)
+//        val userRef = FirebaseDatabase.getInstance().getReference(USER).child(uid)와 같다
         Log.d("get uid", "userInfo: $uid")
 
 //        파이어베이스 데이터베이스의 정보 가져오기
@@ -166,8 +165,6 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
                     if (userItem != null) {
                         Log.d("Data", "onDataChange: ${userItem.userId}")
                     }
-
-                    //placeholder: 이미지 로드 전 또는 로드 실패할때 기본으로 나오는 이미지
                     if (userItem != null) {
                         if (userItem.profile_image.isEmpty()) {
                             binding.ivProfileImage.setImageResource(R.drawable.profile_image)
@@ -175,11 +172,8 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
                             Glide.with(binding.ivProfileImage)
                                 .load(userItem.profile_image)
                                 .into(binding.ivProfileImage)
-//                            Picasso.get().load(userItem.getProfileImage()).into(iv_profileImage)
                         }
                     }
-                    //프로필 이미지를 관리자가 실수로 지워버렸을 경우도 상정해야하기 때문에 placeholder 유지
-//                    Picasso.get().load(userItem.getProfileImage()).placeholder(R.drawable.profile).into(iv_profile);
                     if (userItem != null) {
                         binding.tvNickname.text = userItem.user_name
                     }
@@ -214,15 +208,12 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
                 if (snapshot.exists()) {
                     val testItem: TestItem? = snapshot.getValue(TestItem::class.java)
                     if (testItem != null) {
-                        Log.d("Data", "onDataChange: ${testItem.testId}")
-                    }
-
-                    if (testItem != null) {
                         binding.tvTestName.text = testItem.test_name
                     }
                     if (testItem != null) {
                         binding.tvTestDate.text = testItem.test_date
                     }
+                    //D-DAY 카운트다운 구현
                     if (testItem != null) {
                         val todayMillis = System.currentTimeMillis()
                         val testPeriod = getTestPeriod(todayMillis, testItem.test_date_millis)
