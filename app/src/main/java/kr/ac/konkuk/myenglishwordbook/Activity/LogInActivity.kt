@@ -18,8 +18,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kr.ac.konkuk.myenglishwordbook.Activity.SignUpActivity.Companion.SIGN_UP
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.PROFILE_IMAGE
-import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.SIGN_UP
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.USER
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.USER_ID
 import kr.ac.konkuk.myenglishwordbook.R
@@ -50,11 +50,13 @@ class LogInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         auth = Firebase.auth
         //초기화
 
-
         if (auth.currentUser != null) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-        } else {
+            finish()
+        }
+        else {
+            //초기화
             callbackManager = CallbackManager.Factory.create()
 
             initLoginButton()

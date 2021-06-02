@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.ktx.Firebase
-import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.SIGN_UP
 import kr.ac.konkuk.myenglishwordbook.DBKeys.Companion.USER_NAME
 import kr.ac.konkuk.myenglishwordbook.databinding.ActivitySignUpBinding
 import java.util.*
@@ -72,5 +71,6 @@ class SignUpActivity : AppCompatActivity() {
     companion object {
         const val SIGN_UP_SUCCESS = "회원가입을 성공했습니다. 로그인 버튼을 눌러 로그인해주세요."
         const val SIGN_UP_FAIL = "이미 가입한 이메일이거나, 회원가입에 실패했습니다."
+        const val SIGN_UP = "sign_up"
     }
 }

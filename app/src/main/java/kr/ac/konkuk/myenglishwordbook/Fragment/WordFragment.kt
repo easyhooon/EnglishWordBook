@@ -43,7 +43,6 @@ class WordFragment : Fragment() {
     private lateinit var wordAdapter: WordAdapter
     private lateinit var db: AppDatabase
 
-
     //    private val wordList = mutableListOf<WordItem>()
     private var wordList: ArrayList<WordItem> = ArrayList()
     private var currentBookmarkList: ArrayList<BookmarkItem> = ArrayList()
@@ -289,10 +288,10 @@ class WordFragment : Fragment() {
 
     //tts서비스를 사용할 준비가 됬을때 호출되는 콜백함수
     private fun initTTS() {
-        tts = TextToSpeech(context, TextToSpeech.OnInitListener {
+        tts = TextToSpeech(context) {
             isTtsReady = true
             tts.language = Locale.US
-        })
+        }
     }
 
     override fun onResume() {
@@ -313,6 +312,5 @@ class WordFragment : Fragment() {
         super.onDestroyView()
         tts.shutdown()
         binding = null
-
     }
 }
