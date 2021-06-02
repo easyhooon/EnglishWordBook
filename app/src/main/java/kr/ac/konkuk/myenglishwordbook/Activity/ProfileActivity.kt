@@ -27,6 +27,7 @@ import kr.ac.konkuk.myenglishwordbook.Model.TestItem
 import kr.ac.konkuk.myenglishwordbook.Model.UserItem
 import kr.ac.konkuk.myenglishwordbook.R
 import kr.ac.konkuk.myenglishwordbook.databinding.ActivityProfileBinding
+import kotlin.math.ceil
 
 class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
 
@@ -235,16 +236,19 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
     override fun onComplete(task: Task<Void?>) {}
 
     private fun getTestPeriod(today: Long, testDay: Long): Long {
+        Log.d("getTestPeriod", "todayMillis: ${System.currentTimeMillis()}")
         val diffSec: Long = (testDay - today) / 1000
 
         Log.d("getTestPeriod", "diffSec: $diffSec")
 
-        val diffDays = diffSec / (24 * 60 * 60)
-
+        val diffDays = ceil(diffSec / (24.0 * 60.0 * 60.0))
         Log.d("getTestPeriod", "diffDays: $diffDays")
+
+        val testPeriod = (diffDays).toLong()
+        Log.d("getTestPeriod", "testPeriod: $testPeriod")
 
         //25일에 출발해서 26일에 돌아오면 1박 "2일"이니까
 
-        return diffDays
+        return testPeriod
     }
 }
