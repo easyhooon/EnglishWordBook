@@ -1,5 +1,6 @@
 package kr.ac.konkuk.myenglishwordbook.Activity
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
@@ -208,6 +209,7 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
 
 //        파이어베이스 데이터베이스의 정보 가져오기
         testRef.addValueEventListener(object : ValueEventListener {
+            @SuppressLint("SetTextI18n")
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val testItem: TestItem? = snapshot.getValue(TestItem::class.java)
@@ -223,8 +225,13 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
                     }
                     if (testItem != null) {
                         val todayMillis = System.currentTimeMillis()
-                        binding.tvTestPeriod.text =
-                            getTestPeriod(todayMillis, testItem.test_date_millis).toString()
+                        val testPeriod = getTestPeriod(todayMillis, testItem.test_date_millis)
+                        if(todayMillis >= testItem.test_date_millis)
+                            binding.tvTestPeriod.text = "Day"
+                        else{
+                            binding.tvTestPeriod.text =
+                                testPeriod.toString()
+                        }
                     }
                 }
             }
@@ -246,8 +253,6 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
 
         val testPeriod = (diffDays).toLong()
         Log.d("getTestPeriod", "testPeriod: $testPeriod")
-
-        //25일에 출발해서 26일에 돌아오면 1박 "2일"이니까
 
         return testPeriod
     }
