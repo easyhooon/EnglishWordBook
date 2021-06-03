@@ -39,7 +39,6 @@ import kotlin.collections.ArrayList
 
 class WordFragment : Fragment() {
 
-    private lateinit var wordReference: DatabaseReference
     private lateinit var wordAdapter: WordAdapter
     private lateinit var db: AppDatabase
 
@@ -55,6 +54,10 @@ class WordFragment : Fragment() {
     var isTtsReady = false
 
     private lateinit var bookmarkItem: BookmarkItem
+
+    private val wordReference: DatabaseReference by lazy {
+        Firebase.database.reference.child(WORD)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -104,7 +107,7 @@ class WordFragment : Fragment() {
         binding?.swipe?.setOnRefreshListener {
 //            binding!!.swipe.isRefreshing = true
             initDB()
-            initRecyclerView()
+//            initRecyclerView()
             initData()
             binding!!.swipe.isRefreshing = false
 
@@ -112,6 +115,7 @@ class WordFragment : Fragment() {
     }
 
     private fun initData() {
+        //로딩이 느려 프로그래스바를 띄우도록
         scope.launch {
             binding?.progressBar?.visibility = View.VISIBLE
             CoroutineScope(Dispatchers.IO).async {
@@ -124,15 +128,17 @@ class WordFragment : Fragment() {
                             val wordItem: WordItem? = snapshot.getValue(WordItem::class.java)
                             wordItem ?: return
 
-                            for (i in currentBookmarkList) {
-                                if (wordItem.word == i.word) {
-                                    wordItem.isChecked = !wordItem.isChecked
+                            for (bookmark in currentBookmarkList) {
+                                if (wordItem.word == bookmark.word) {
+//                                    wordItem.isChecked = !wordItem.isChecked
+                                    Log.d(TAG, "bookmark에 포함된 단어: ${wordItem.word}")
+                                    wordItem.isChecked = true
+                                    break
                                 }
                             }
-
                             wordList.add(0, wordItem)
                         }
-                        //처음 또는 단어장에 단어가 존재하지 않을 경우 Firebase RealTimeDatabase 에 text파일의 Default 단어를 저장하는 코드
+                        //처음 또는 DB에 저장된 단어에 단어가 1개도 존재하지 않을 경우 Firebase RealTimeDatabase 에 text파일의 Default 단어를 저장하는 코드
                         if (wordList.isEmpty()) {
                             val scan = Scanner(resources.openRawResource(R.raw.words))
 
@@ -168,7 +174,6 @@ class WordFragment : Fragment() {
     }
 
     private fun initDB() {
-        wordReference = Firebase.database.reference.child(WORD)
         db = activity?.let { getAppDatabase(it) }!!
 
         scope.launch {

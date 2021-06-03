@@ -28,7 +28,10 @@ import kr.ac.konkuk.myenglishwordbook.Model.TestItem
 import kr.ac.konkuk.myenglishwordbook.Model.UserItem
 import kr.ac.konkuk.myenglishwordbook.R
 import kr.ac.konkuk.myenglishwordbook.databinding.ActivityProfileBinding
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.ceil
+import kotlin.math.floor
 
 class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
 
@@ -52,8 +55,8 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
         initDeleteAccountButton()
         initLeftButton()
         initPlanButton()
-        userInfo()
-        testInfo()
+        initUserInfo()
+        initTestInfo()
     }
 
     private fun initPlanButton() {
@@ -103,7 +106,7 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
     }
 
     private fun initLogoutButton() {
-        //로그아웃 버튼을 누르면 로그아웃이 되고 SignInActivity로 돌아감
+        //로그아웃 버튼을 누르면 로그아웃이 되고 LogInActivity 로 돌아감
         binding.btnLogout.setOnClickListener { //파이어베이스에 연동된 계정 로그아웃 처리
             FirebaseAuth.getInstance().signOut()
             val intent = Intent(this@ProfileActivity, LogInActivity::class.java)
@@ -150,7 +153,7 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
         }
     }
 
-    private fun userInfo() {
+    private fun initUserInfo() {
         //입력 로그인용 유저의 데이터를 불러오기 위한 uid
         val uid = firebaseUser.uid
         val userRef = Firebase.database.reference.child(USER).child(uid)
@@ -185,15 +188,9 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
 
             override fun onCancelled(error: DatabaseError) {}
         })
-        val spf = PreferenceManager.getDefaultSharedPreferences(this)
-        if (spf.contains("username")) {
-            val username = spf.getString("username", "").toString()
-            binding.tvNickname.text = username
-        }
-        binding.tvAccount.text = firebaseUser.email
     }
 
-    private fun testInfo() {
+    private fun initTestInfo() {
         //입력 로그인용 유저의 데이터를 불러오기 위한 uid
 
         //testId와 userId를 같게 설정함
@@ -217,7 +214,7 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
                     if (testItem != null) {
                         val todayMillis = System.currentTimeMillis()
                         val testPeriod = getTestPeriod(todayMillis, testItem.test_date_millis)
-                        if(todayMillis >= testItem.test_date_millis)
+                        if(todayMillis >= testItem.test_date_millis || testPeriod == 0L)
                             binding.tvTestPeriod.text = "Day"
                         else{
                             binding.tvTestPeriod.text =
@@ -233,13 +230,20 @@ class ProfileActivity : AppCompatActivity(), OnCompleteListener<Void?> {
 
     override fun onComplete(task: Task<Void?>) {}
 
+    @SuppressLint("SimpleDateFormat")
     private fun getTestPeriod(today: Long, testDay: Long): Long {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        val timeInDate = Date(testDay)
+        val timeInFormat = sdf.format(timeInDate)
+
+        Log.d("getTestPeriod", "timeInFormat: $timeInFormat")
+
         Log.d("getTestPeriod", "todayMillis: ${System.currentTimeMillis()}")
         val diffSec: Long = (testDay - today) / 1000
 
         Log.d("getTestPeriod", "diffSec: $diffSec")
 
-        val diffDays = ceil(diffSec / (24.0 * 60.0 * 60.0))
+        val diffDays = floor(diffSec / (24.0 * 60.0 * 60.0))
         Log.d("getTestPeriod", "diffDays: $diffDays")
 
         val testPeriod = (diffDays).toLong()

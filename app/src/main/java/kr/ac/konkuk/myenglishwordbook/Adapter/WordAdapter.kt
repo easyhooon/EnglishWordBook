@@ -39,8 +39,6 @@ class WordAdapter(val items: ArrayList<WordItem>, val context: Context) :
 
     private lateinit var wordReference: DatabaseReference
 
-    lateinit var vibrator: Vibrator
-
     //부모 생성자로 인자 전달
     //이벤트 처리는 뷰 홀더에서 처리!!!!
     inner class ViewHolder(val binding: WordItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -57,6 +55,7 @@ class WordAdapter(val items: ArrayList<WordItem>, val context: Context) :
                 binding.meaningLayout.visibility = View.GONE
 
             if (isCheckedItem) {
+                Log.d("Viewholder", "색깔 변화: ${items[adapterPosition].word}")
                 binding.btnBookmark.setBackgroundColor(Color.YELLOW)
             }
 
